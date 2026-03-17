@@ -1,8 +1,107 @@
-# Telegram Bot для опроса об обеде
+# 🍽️ Lunch Telegram Bot
 
-Бот для ежедневного опроса сотрудников об участии в обеде с автоматическими напоминаниями и формированием списков.
+Telegram бот для управления обедами в команде с автоматическими напоминаниями и списками участников.
 
-## Функционал
+## 🚀 Быстрый старт для нового разработчика
+
+### 1. Клонирование и базовая настройка
+```bash
+git clone <repository-url>
+cd Lunch_TG_BOT
+```
+
+### 2. Настройка переменных окружения (ОБЯЗАТЕЛЬНО!)
+
+Создайте файл `.env` в корне проекта с вашими данными:
+```bash
+# Telegram Bot Configuration
+TELEGRAM_BOT_TOKEN=ВАШ_ТОКЕН_ОТ_BOTFATHER
+TELEGRAM_CHAT_ID=ВАШ_CHAT_ID
+
+# Database Configuration  
+DB_PASSWORD=ПАРОЛЬ_ПОСТГРЕС
+```
+
+### 3. Настройка базы данных PostgreSQL
+```sql
+CREATE DATABASE lunch_bot;
+CREATE USER lunch_bot WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE lunch_bot TO lunch_bot;
+```
+
+### 4. Создание бота в Telegram
+1. Найдите @BotFather в Telegram
+2. Отправьте `/newbot`
+3. Имя: `Lunch Helper Bot`
+4. Username: `lunch_helper_v2_bot`
+5. Скопируйте полученный токен в `.env` файл
+
+### 5. Запуск приложения
+```bash
+# Через Maven Wrapper
+./mvnw spring-boot:run
+
+# Или через IDE (IntelliJ IDEA)
+# LunchTgBotApplication.java → Right Click → Run
+```
+
+## 📋 Команды бота
+| Команда | Описание |
+|---------|----------|
+| `/start` | Регистрация пользователя |
+| `/lunch` | Вопрос об обеде с кнопками |
+| `/list` | Список обедающих сегодня |
+| `/setname` | Установить отображаемое имя |
+| `/help` | Справка по командам |
+
+## ⏰ Автоматизация
+- **10:00** - Утренний вопрос об обеде (только Пн-Пт)
+- **Каждые 30 минут** - Напоминания для неответивших (10:00-14:00)  
+- **11:30** - Финальный список обедающих (только Пн-Пт)
+
+## 🔒 Безопасность
+- Все секреты хранятся в переменных окружения
+- `.env` файл добавлен в `.gitignore`
+- Токены никогда не хранятся в коде
+- Используются подготовленные statement для SQL
+
+## 🏗️ Архитектура проекта
+```
+src/main/java/com/example/lunch_tg_bot/
+├── config/          # Конфигурация приложения
+├── model/           # Сущности базы данных
+├── repository/       # Репозитории Spring Data
+├── service/         # Бизнес-логика
+└── LunchTgBotApplication.java  # Главный класс
+```
+
+## 🐛 Отладка
+```bash
+# Уровень логирования (добавить в application.properties)
+logging.level.com.example.lunch_tg_bot=DEBUG
+
+# Просмотр логов
+tail -f logs/application.log
+```
+
+## 🚀 Развертывание
+### Production
+1. Установите переменные окружения на сервере
+2. Настройте PostgreSQL базу данных
+3. Разверните приложение:
+```bash
+java -jar target/Lunch_TG_BOT-0.0.1-SNAPSHOT.jar
+```
+
+## 🤝 Участие в разработке
+1. Fork проекта
+2. Создайте feature branch: `git checkout -b feature/new-feature`
+3. Внесите изменения
+4. Создайте Pull Request
+
+---
+
+**🎉 Приятного использования!**
 
 - 🤔 Ежедневный вопрос об обеде с кнопками "Да" и "Нет"
 - ⏰ Автоматические напоминания для тех, кто не ответил

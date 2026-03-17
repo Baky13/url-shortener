@@ -151,7 +151,8 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
     public void sendLunchQuestion(String chatId) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> row = new ArrayList<>();
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
         
         InlineKeyboardButton yesButton = new InlineKeyboardButton();
         yesButton.setText("Да, буду обедать 🍽️");
@@ -161,9 +162,9 @@ public class TelegramBotService extends TelegramLongPollingBot {
         noButton.setText("Нет, не буду 😔");
         noButton.setCallbackData("NO");
         
-        row.add(yesButton);
-        row.add(noButton);
-        markup.setKeyboard(List.of(row));
+        row1.add(yesButton);
+        row2.add(noButton);
+        markup.setKeyboard(List.of(row1, row2));
 
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
@@ -173,6 +174,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
         try {
             execute(message);
+            log.info("Вопрос с кнопками отправлен в чат {}", chatId);
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки сообщения: {}", e.getMessage(), e);
         }
@@ -305,7 +307,8 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
     public void sendLunchQuestionToUser(Long userId, String userName) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> row = new ArrayList<>();
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
         
         InlineKeyboardButton yesButton = new InlineKeyboardButton();
         yesButton.setText("Да, буду обедать 🍽️");
@@ -315,9 +318,9 @@ public class TelegramBotService extends TelegramLongPollingBot {
         noButton.setText("Нет, не буду 😔");
         noButton.setCallbackData("NO");
         
-        row.add(yesButton);
-        row.add(noButton);
-        markup.setKeyboard(List.of(row));
+        row1.add(yesButton);
+        row2.add(noButton);
+        markup.setKeyboard(List.of(row1, row2));
 
         String questionText = userName + ", будешь ли ты сегодня обедать? 🤔";
 
