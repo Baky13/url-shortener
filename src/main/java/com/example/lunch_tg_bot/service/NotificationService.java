@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class NotificationService {
@@ -27,7 +27,7 @@ public class NotificationService {
     private final BotConfig botConfig;
     private final UserRepository userRepository;
     
-    private final Set<Long> usersNeedingReminders = new HashSet<>();
+    private final Set<Long> usersNeedingReminders = ConcurrentHashMap.newKeySet();
 
     public NotificationService(@Lazy TelegramBotService telegramBotService,
                              LunchListService lunchListService,
