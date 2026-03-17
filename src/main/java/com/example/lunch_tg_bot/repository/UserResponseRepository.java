@@ -28,28 +28,6 @@ public interface UserResponseRepository extends JpaRepository<UserResponse, Long
     // Подсчитать ответы "Да" за дату
     long countByResponseDateAndAnswer(LocalDate responseDate, UserResponse.Answer answer);
     
-    // Получить статистику за период
-    @Query("SELECT new com.example.lunch_tg_bot.dto.DailyStats(" +
-           "ur.responseDate, " +
-           "COUNT(ur), " +
-           "SUM(CASE WHEN ur.answer = 'YES' THEN 1 ELSE 0 END), " +
-           "SUM(CASE WHEN ur.answer = 'NO' THEN 1 ELSE 0 END)" +
-           ") FROM UserResponse ur " +
-           "WHERE ur.responseDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY ur.responseDate " +
-           "ORDER BY ur.responseDate")
-    List<com.example.lunch_tg_bot.dto.DailyStats> getStatsByPeriod(@Param("startDate") LocalDate startDate, 
-                                                                  @Param("endDate") LocalDate endDate);
-    
-    // Получить личную статистику пользователя
-    @Query("SELECT new com.example.lunch_tg_bot.dto.UserStats(" +
-           "COUNT(ur), " +
-           "SUM(CASE WHEN ur.answer = 'YES' THEN 1 ELSE 0 END), " +
-           "SUM(CASE WHEN ur.answer = 'NO' THEN 1 ELSE 0 END)" +
-           ") FROM UserResponse ur " +
-           "WHERE ur.userId = :userId")
-    Optional<com.example.lunch_tg_bot.dto.UserStats> getUserStats(@Param("userId") Long userId);
-    
     // Проверить отвечал ли пользователь сегодня
     boolean existsByUserIdAndResponseDate(Long userId, LocalDate responseDate);
     
