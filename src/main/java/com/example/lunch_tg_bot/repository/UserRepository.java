@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     // Найти пользователей по имени
     List<User> findByDisplayNameContainingIgnoreCase(String displayName);
+    
+    // Найти пользователей по списку Telegram ID
+    List<User> findByTelegramUserIdIn(List<Long> telegramUserIds);
 }

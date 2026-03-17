@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +33,16 @@ public class LunchListService {
             return "😔 Сегодня никто не обедает";
         }
 
+        // Загружаем всех пользователей одним запросом
+        List<Long> userIds = todayResponses.stream()
+                .map(UserResponse::getUserId)
+                .toList();
+        Map<Long, User> userMap = userRepository.findByTelegramUserIdIn(userIds)
+                .stream()
+                .collect(Collectors.toMap(User::getTelegramUserId, user -> user));
+
         String lunchList = todayResponses.stream()
-                .map(this::formatUserResponse)
+                .map(response -> formatUserResponse(response, userMap))
                 .collect(Collectors.joining("\n"));
 
         return "🍽️ Будут обедать (" + todayResponses.size() + "):\n\n" + lunchList;
@@ -48,8 +57,16 @@ public class LunchListService {
             return "";
         }
 
+        // Загружаем всех пользователей одним запросом
+        List<Long> userIds = todayResponses.stream()
+                .map(UserResponse::getUserId)
+                .toList();
+        Map<Long, User> userMap = userRepository.findByTelegramUserIdIn(userIds)
+                .stream()
+                .collect(Collectors.toMap(User::getTelegramUserId, user -> user));
+
         String notLunchList = todayResponses.stream()
-                .map(this::formatUserResponse)
+                .map(response -> formatUserResponse(response, userMap))
                 .collect(Collectors.joining("\n"));
 
         return "\n\n😔 Не будут обедать (" + todayResponses.size() + "):\n\n" + notLunchList;
@@ -82,27 +99,45 @@ public class LunchListService {
 
         if (!yesResponses.isEmpty()) {
             result.append("🍽️ Будут обедать (").append(yesResponses.size()).append("):\n");
+            
+            // Загружаем пользователей одним запросом
+            List<Long> yesUserIds = yesResponses.stream()
+                    .map(UserResponse::getUserId)
+                    .toList();
+            Map<Long, User> yesUserMap = userRepository.findByTelegramUserIdIn(yesUserIds)
+                    .stream()
+                    .collect(Collectors.toMap(User::getTelegramUserId, user -> user));
+            
             yesResponses.stream()
-                    .map(this::formatUserResponse)
+                    .map(response -> formatUserResponse(response, yesUserMap))
                     .forEach(user -> result.append(user).append("\n"));
         }
 
         if (!noResponses.isEmpty()) {
             result.append("\n😔 Не будут обедать (").append(noResponses.size()).append("):\n");
+            
+            // Загружаем пользователей одним запросом
+            List<Long> noUserIds = noResponses.stream()
+                    .map(UserResponse::getUserId)
+                    .toList();
+            Map<Long, User> noUserMap = userRepository.findByTelegramUserIdIn(noUserIds)
+                    .stream()
+                    .collect(Collectors.toMap(User::getTelegramUserId, user -> user));
+            
             noResponses.stream()
-                    .map(this::formatUserResponse)
+                    .map(response -> formatUserResponse(response, noUserMap))
                     .forEach(user -> result.append(user).append("\n"));
         }
 
         return result.toString();
     }
 
-    private String formatUserResponse(UserResponse response) {
-        Optional<User> user = userRepository.findByTelegramUserId(response.getUserId());
+    private String formatUserResponse(UserResponse response, Map<Long, User> userMap) {
+        User user = userMap.get(response.getUserId());
         String name;
         
-        if (user.isPresent() && user.get().getDisplayName() != null) {
-            name = user.get().getDisplayName();
+        if (user != null && user.getDisplayName() != null) {
+            name = user.getDisplayName();
         } else {
             name = response.getFirstName();
             if (response.getLastName() != null && !response.getLastName().trim().isEmpty()) {
